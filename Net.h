@@ -14,8 +14,6 @@ class Net : public NetworkItem
 {
     list<NetworkItem *> NetItemList;
     list<IP> IPList;
-    int NetItemListSize;
-    int IPListSize;
 
 public:
     /**
