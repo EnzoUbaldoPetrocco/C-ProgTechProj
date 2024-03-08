@@ -74,8 +74,8 @@ void IP::setip(int *newip)
     }
     catch (int i)
     {
-        cout << "Index " << i << "of new IP is not valid" << endl;
-        ;
+        cout << "Index " << i << " of new IP is not valid: " << newip[i] << endl;
+        
     }
 }
 

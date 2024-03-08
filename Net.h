@@ -31,7 +31,7 @@ public:
     */
     Net(const char *name, IP ip) : NetworkItem(name, ip)
     {
-        this->init_IPs(ip.getip()[3]);
+        this->init_IPs();
     }
     /**
      * Copy constructor of Net object calls NetworkItem copy constructor
@@ -62,7 +62,7 @@ public:
     bool AddCopy(const NetworkItem *item);
     bool Add(NetworkItem *item);
     bool remove(const IP ipremove);
-    void init_IPs(int host = -1);
+    void init_IPs();
 
     virtual void Print() const;
     void Print(const char *s) const;

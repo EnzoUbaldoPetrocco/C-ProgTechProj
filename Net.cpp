@@ -11,6 +11,7 @@ using namespace std;
 
 #include "Net.h"
 #include <random>
+#include <typeinfo>
 
 /**
  * Setter of NetItemList
@@ -69,11 +70,10 @@ bool Net::AddCopy(const NetworkItem *item)
 {
     if (IPList.size() == 0)
         return false;
-    auto tempit = IPList.end();
-    IP tempip = *tempit;
+    IP tempip = IPList.back();;
     IPList.pop_back();
-
     NetItemList.push_back(item->clone());
+    NetItemList.back()->setIP(tempip);
     return true;
 }
 /**
@@ -86,11 +86,10 @@ bool Net::Add(NetworkItem *item)
 {
     if (IPList.size() == 0)
         return false;
-    auto tempit = IPList.end();
-    IP tempip = *tempit;
+    IP tempip = IPList.back();
     IPList.pop_back();
-
     NetItemList.push_back(item);
+    NetItemList.back()->setIP(tempip);
     return true;
 }
 
@@ -129,55 +128,27 @@ bool Net::remove(const IP ipremove)
  * The Net Ip has as host (last element of IP) a 0.
  * For testing purposes, I limited the possible IPs to 30 addresses
 */
-void Net::init_IPs(int host)
+void Net::init_IPs()
 {   
-    
-    // Limiting number of IPs for testing purposes
-    int n_ips = 30;
+    int n_ips = 255;
     int newip[4];
-    this->m_ip.getip()[3] = 0;
-    for(int i = 0; i < 3; i++){
-        newip[i] = this->m_ip.getip()[i]; 
-    }
-    int* hosts;
-    if (host != -1) {
-        hosts = new int[n_ips];
-        for (int i = 0; i < n_ips; i++)
-        {
-            hosts[i] = i;
-        }
-    }
-    else {
-        if (host + n_ips < 256) {
-
-            hosts = new int[n_ips];
-            for (int i = host; i < host + n_ips; i++) {
-                hosts[i] = i;
-            }
-        }
-        else {
-            if (host < 255) {
-                n_ips = 256 - host;
-                hosts = new int[n_ips];
-                for (int i = host; i < host + n_ips; i++) {
-                    hosts[i] = i;
-                }
-            }
-            else {
-                n_ips = 0;
-                hosts = new int[n_ips];
-            }
-
-        }
-    }
+    int hosts[4][n_ips];
     std::default_random_engine generator(10);
-    std::shuffle(hosts, hosts + n_ips, generator);
+    for (int j = 0; j < 4; j++) {
+        for (int i = 0; i < n_ips; i++) {
+            hosts[j][i] = i;
+        }
+        std::shuffle(hosts[j], hosts[j] + n_ips, generator);
+    }
     for (int i = 0; i < n_ips; i++)
     {
-        newip[3] = hosts[i];
+        for (int j = 0; j < 4; j++) {
+            newip[j] = hosts[j][i];
+        }
+        // Non considero come disponibile l'indirizzo 0.0.0.0
+        if(newip[0]>0 && newip[1] > 0 && newip[2] > 0 && newip[3] > 0)
         IPList.push_back(IP(newip));
     }
-
 }
 
 /**
@@ -186,12 +157,6 @@ void Net::init_IPs(int host)
 void Net::Print() const
 {
     NetworkItem::Print();
-    cout << "Available IPs: ";
-    for (const auto &tempIP : this->IPList)
-    {
-        tempIP.Print();
-        cout << " - ";
-    }
     cout << "Items Connected: ";
     for (const auto &tempNet : this->NetItemList)
     {
