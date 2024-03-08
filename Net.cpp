@@ -129,29 +129,55 @@ bool Net::remove(const IP ipremove)
  * The Net Ip has as host (last element of IP) a 0.
  * For testing purposes, I limited the possible IPs to 30 addresses
 */
-void Net::init_IPs()
-{
+void Net::init_IPs(int host)
+{   
     
     // Limiting number of IPs for testing purposes
-    const int n_ips = 30;
+    int n_ips = 30;
     int newip[4];
     this->m_ip.getip()[3] = 0;
     for(int i = 0; i < 3; i++){
         newip[i] = this->m_ip.getip()[i]; 
     }
-    int host[n_ips];
-    std::default_random_engine generator(10);
-    for (int i = 0; i < n_ips; i++)
-    {
-        host[i] = i;
+    int* hosts;
+    if (host != -1) {
+        hosts = new int[n_ips];
+        for (int i = 0; i < n_ips; i++)
+        {
+            hosts[i] = i;
+        }
     }
-    
-    std::shuffle(host, host + n_ips, generator);
+    else {
+        if (host + n_ips < 256) {
+
+            hosts = new int[n_ips];
+            for (int i = host; i < host + n_ips; i++) {
+                hosts[i] = i;
+            }
+        }
+        else {
+            if (host < 255) {
+                n_ips = 256 - host;
+                hosts = new int[n_ips];
+                for (int i = host; i < host + n_ips; i++) {
+                    hosts[i] = i;
+                }
+            }
+            else {
+                n_ips = 0;
+                hosts = new int[n_ips];
+            }
+
+        }
+    }
+    std::default_random_engine generator(10);
+    std::shuffle(hosts, hosts + n_ips, generator);
     for (int i = 0; i < n_ips; i++)
     {
-        newip[3] = host[i];
+        newip[3] = hosts[i];
         IPList.push_back(IP(newip));
     }
+
 }
 
 /**

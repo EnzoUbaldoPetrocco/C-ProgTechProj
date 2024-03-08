@@ -32,4 +32,5 @@ int main()
     root.remove(pc->getIP());
     root.Print("");
     cout << "Net size after removing object= " << root.Size() << endl;
+    return 0;
 }

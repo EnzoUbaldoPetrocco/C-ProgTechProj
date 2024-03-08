@@ -54,7 +54,9 @@ public:
     /**
      * Destructor of PC object
     */
-    ~PC() {}
+    ~PC() {
+        delete mem;
+    }
 
     PC &operator=(const PC &r);
 
